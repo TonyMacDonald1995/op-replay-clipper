@@ -5,6 +5,7 @@ import dataclasses
 from urllib.parse import urlparse
 
 import requests
+import os
 
 # Dataclass for a parsed route or URL
 
@@ -25,8 +26,9 @@ def parseRouteRelativeUrl(
 ) -> ParsedRouteOrURL:
     # Parse the URL
     parsed_url = urlparse(route_or_url)
+    connect_url = os.getenv('CONNECT_URL', "connect.comma.ai")
     # Check the hostname
-    if parsed_url.hostname != "connect.comma.ai":
+    if parsed_url.hostname != connect_url:
         raise ValueError("Invalid hostname in URL")
     # Check the path
     path_parts = parsed_url.path.split("/")
@@ -73,9 +75,10 @@ def parseAbsoluteTimeUrl(
 
     # Parse the URL
     parsed_url =  urlparse(route_or_url)
+    connect_url = os.getenv('CONNECT_URL', "connect.comma.ai")
 
     # Check the hostname
-    if parsed_url.hostname != "connect.comma.ai":
+    if parsed_url.hostname != connect_url:
         raise ValueError("Invalid hostname in URL")
 
     # Check the path
@@ -97,7 +100,8 @@ def parseAbsoluteTimeUrl(
     # https://api.comma.ai/v1/devices/a2a0ccea32023010/routes_segments?end=1690488851596&start=1690488081496
 
     # Make the API call
-    api_url = f"https://api.comma.ai/v1/devices/{dongle_id}/routes_segments?end={end_time}&start={start_time}"
+    comma_api = os.getenv('COMMA_API', "api.comma.ai")
+    api_url = f"https://{comma_api}/v1/devices/{dongle_id}/routes_segments?end={end_time}&start={start_time}"
     if jwt_token:
         response = requests.get(api_url, headers={"Authorization": f"JWT {jwt_token}"})
     else:
@@ -230,10 +234,11 @@ def parseRouteOrUrl(
     url_parts = parsed_url.path.split("/")
 
     # Check if the host is connect.comma.ai
-    valid_hostname = parsed_url.hostname == "connect.comma.ai"
+    connect_url = os.getenv('CONNECT_URL', "connect.comma.ai")
+    valid_hostname = parsed_url.hostname == connect_url
     if not valid_hostname:
         raise ValueError("Invalid hostname in URL")
-    if not parsed_url.hostname == "connect.comma.ai":
+    if not parsed_url.hostname == connect_url:
         raise ValueError("Invalid hostname in URL")
 
     # Check if the path has 3 parts
