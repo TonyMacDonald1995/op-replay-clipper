@@ -7,6 +7,7 @@ import requests
 import subprocess
 import re
 import time
+import os
 
 # Filelist type
 
@@ -80,7 +81,8 @@ def downloadSegments(
     # E.g https://api.commadotai.com/v1/route/a2a0ccea32023010|2023-07-27--13-01-19/files
     # Make route URL encoded
     route_url = route.replace("|", "%7C")
-    filelist_url = f"https://api.commadotai.com/v1/route/{route_url}/files"
+    comma_api = os.getenv('COMMA_API', "api.commadotai.com")
+    filelist_url = f"https://{comma_api}/v1/route/{route_url}/files"
     print(f"Downloading file list from {filelist_url}")
 
     # Check if the route is accessible
@@ -98,7 +100,7 @@ def downloadSegments(
     # Look at the complete route segments endpoint of the and lookup the route info
     # e.g. https://api.comma.ai/v1/devices/<dongle id>/routes_segments?end=1712304000000&start=0
     # Where end is the current unix time in milliseconds format
-    full_route_segments_url = f"https://api.comma.ai/v1/devices/{dongle_id}/routes_segments?end={int(time.time() * 1000)}&start=0"
+    full_route_segments_url = f"https://{comma_api}/v1/devices/{dongle_id}/routes_segments?end={int(time.time() * 1000)}&start=0"
     print(f"Downloading route segment info from {full_route_segments_url}")
     if jwt_token:
         route_info_response = requests.get(full_route_segments_url, headers={"Authorization": f"JWT {jwt_token}"})
