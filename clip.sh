@@ -376,9 +376,9 @@ URL_ROUTE=$(echo "$ROUTE" | sed 's/|/%7C/g')
 
 # Get route info
 if [ -n "$JWT_AUTH" ]; then
-	ROUTE_INFO=$(curl --fail -H "Authorization: JWT $JWT_AUTH" https://api.commadotai.com/v1/route/$URL_ROUTE/)
+	ROUTE_INFO=$(curl --fail -H "Authorization: JWT $JWT_AUTH" https://${COMMA_API:-api.commadotai.com}/v1/route/$URL_ROUTE/)
 else
-	ROUTE_INFO=$(curl --fail https://api.commadotai.com/v1/route/$URL_ROUTE/)
+	ROUTE_INFO=$(curl --fail https://${COMMA_API:-api.commadotai.com}/v1/route/$URL_ROUTE/)
 fi
 
 # Check if format is valid
